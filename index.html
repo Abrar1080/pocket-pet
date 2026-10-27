@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Pocket Pet — a pet that lives on your real day</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="pets.js"></script>
+<script src="db.js"></script>
+<script src="app.js"></script>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="logo">🐾 Pocket Pet</div>
+    <div class="topstats">
+      <span class="pill">🪙 <b id="coinCount">0</b></span>
+      <span class="pill" id="streakBadge">🔥 0</span>
+    </div>
+  </header>
+  <div class="modebar">
+    <span id="modeBadge">…</span>
+    <span id="profileName"></span>
+    <button id="logoutBtn" class="linkbtn">Log out</button>
+  </div>
+  <p id="modeNote" class="modenote"></p>
+
+  <!-- ============ AUTH ============ -->
+  <section id="authView" class="card">
+    <h1>Welcome to Pocket Pet!</h1>
+    <p class="muted">A virtual pet that lives on your real day. Feed it by drinking water, play with it by walking, and watch it grow.</p>
+    <p id="localNote" class="muted"></p>
+    <div class="authblock">
+      <h3>Play on this device</h3>
+      <input id="guestName" type="text" placeholder="Your display name" maxlength="30">
+      <button id="guestBtn" class="btn big">Start as guest</button>
+    </div>
+    <div class="authblock" id="onlineAuthBox" style="display:none">
+      <h3>Online account</h3>
+      <input id="displayNameInput" type="text" placeholder="Display name (for sign-up)" maxlength="30">
+      <input id="emailInput" type="email" placeholder="Email" autocomplete="email">
+      <input id="passInput" type="password" placeholder="Password" autocomplete="current-password">
+      <div class="row">
+        <button id="signupBtn" class="btn">Sign up</button>
+        <button id="loginBtn" class="btn secondary">Log in</button>
+      </div>
+      <button id="googleBtn" class="btn google">Continue with Google</button>
+      <p id="authMsg" class="muted"></p>
+      <p class="tiny">Google sign-in works after the Google provider is enabled in your Supabase project (see README-SETUP.md). Email sign-up may ask you to confirm your email first, depending on your Supabase settings.</p>
+    </div>
+  </section>
+
+  <!-- ============ MAIN ============ -->
+  <main id="mainView" style="display:none">
+    <nav class="tabs">
+      <button data-tab="home" class="tab active">🏠 Home</button>
+      <button data-tab="shop" class="tab">🛍 Shop</button>
+      <button data-tab="play" class="tab">🎮 Play</button>
+      <button data-tab="friends" class="tab">👯 Friends</button>
+      <button data-tab="diary" class="tab">📖 Diary</button>
+    </nav>
+
+    <!-- HOME -->
+    <section data-section="home">
+      <div class="card petcard">
+        <div id="petArt" class="petart"></div>
+        <h2 id="petNameLabel">Milo</h2>
+        <p id="petSpeciesLabel" class="muted"></p>
+        <div id="speechBubble" class="bubble">Hello!</div>
+        <div class="stats">
+          <div class="stat"><span>Hunger <b id="valHunger">0</b></span><div class="bar"><div id="statHunger" class="fill hunger"></div></div></div>
+          <div class="stat"><span>Happiness <b id="valHappy">0</b></span><div class="bar"><div id="statHappy" class="fill happy"></div></div></div>
+          <div class="stat"><span>Energy <b id="valEnergy">0</b></span><div class="bar"><div id="statEnergy" class="fill energy"></div></div></div>
+          <div class="stat"><span>Health <b id="valHealth">0</b></span><div class="bar"><div id="statHealth" class="fill health"></div></div></div>
+        </div>
+        <p class="tiny muted">Stats drift down slowly over time, but your pet never dies — the lowest any stat goes is a sad, recoverable mood.</p>
+      </div>
+
+      <div class="card">
+        <h3>Care for your pet (your real day)</h3>
+        <div class="actions">
+          <button class="btn action" data-action="water">💧 Drink water</button>
+          <button class="btn action" data-action="meal">🍽 Eat a meal</button>
+          <button class="btn action" data-action="walk">🚶 Walk</button>
+          <button class="btn action" data-action="play">🎾 Play</button>
+          <button class="btn action" data-action="sleep">😴 Sleep</button>
+          <button class="btn action" data-action="cuddle">🤗 Cuddle</button>
+        </div>
+        <p class="tiny muted">Care actions earn up to 30 coins per day. Stages: egg (0 XP) → baby (20) → teen (100) → adult (250).</p>
+      </div>
+
+      <div class="card">
+        <h3>Daily quests</h3>
+        <div id="questList"></div>
+      </div>
+
+      <div class="card">
+        <h3>Your pets</h3>
+        <div id="adoptList"></div>
+        <p class="tiny muted">Start with a cat. Adopt a dog, fox, dragon, or parrot with coins — each pet keeps its own progress.</p>
+      </div>
+    </section>
+
+    <!-- SHOP -->
+    <section data-section="shop" style="display:none">
+      <div class="card">
+        <h3>Shop</h3>
+        <div id="shopList"></div>
+      </div>
+      <div class="card">
+        <h3>Your backpack</h3>
+        <div id="invList"></div>
+        <h3>Your pet room</h3>
+        <div id="roomPreview"></div>
+      </div>
+      <div class="card">
+        <h3>Coin packs</h3>
+        <div id="packList">
+          <div class="shop-item"><b>100 coins</b><span class="muted">Starter pack</span><button class="btn small" disabled>Payments coming soon</button></div>
+          <div class="shop-item"><b>550 coins</b><span class="muted">Popular pack</span><button class="btn small" disabled>Payments coming soon</button></div>
+          <div class="shop-item"><b>1200 coins</b><span class="muted">Big pack</span><button class="btn small" disabled>Payments coming soon</button></div>
+          <div class="shop-item"><b>3000 coins</b><span class="muted">Mega pack</span><button class="btn small" disabled>Payments coming soon</button></div>
+        </div>
+        <p class="tiny muted">Real-money checkout is not connected yet, so these buttons are disabled on purpose — no purchase is faked. The game is fully playable free: earn coins from care, quests, and games.</p>
+        <button id="adBtn" class="btn secondary">🎬 Watch ad for coins</button>
+        <p id="adNote" class="tiny muted">Ad rewards are unavailable until an ad network is connected.</p>
+      </div>
+    </section>
+
+    <!-- PLAY -->
+    <section data-section="play" style="display:none">
+      <div class="card">
+        <h3>🎾 Fetch!</h3>
+        <p class="muted">Tap the ball as many times as you can in 20 seconds.</p>
+        <div class="row"><span id="fetchScore">Score: 0</span><span id="fetchTime">Time: 20s</span></div>
+        <div id="fetchArea" class="fetch-area"></div>
+        <button id="fetchStart" class="btn">Start fetch</button>
+        <p id="fetchMsg" class="muted"></p>
+      </div>
+      <div class="card">
+        <h3>🧠 Memory match</h3>
+        <p class="muted">Find all 6 pairs. Win = up to 20 coins.</p>
+        <div id="memBoard" class="mem-board"></div>
+        <button id="memStart" class="btn">Start memory game</button>
+        <p id="memMsg" class="muted"></p>
+        <p class="tiny muted">Games pay up to 100 coins per day and 10 plays per day, so nobody can grind unlimited coins.</p>
+      </div>
+    </section>
+
+    <!-- FRIENDS -->
+    <section data-section="friends" style="display:none">
+      <div class="card" id="friendsLocalNotice" style="display:none">
+        <h3>👯 Friends need Supabase</h3>
+        <p>Friend rooms, real chat, and online races need the free Supabase backend. Right now this game is in local mode, so no fake friends are shown here.</p>
+        <p class="muted">Follow README-SETUP.md (free, no card): create a Supabase project, run schema.sql, paste the URL + anon key into config.js — then friends unlock.</p>
+        <h3>Practice race (solo, clearly not a friend)</h3>
+        <p class="muted">Race your pet against Robo, a computer pet, just for fun. No coins — practice only.</p>
+        <button id="practiceRaceBtn" class="btn">Start practice race</button>
+        <p id="practiceRaceMsg" class="muted"></p>
+        <div id="practiceRaceArea"></div>
+      </div>
+      <div id="friendsOnline" style="display:none">
+        <div class="card">
+          <h3>Friend rooms (2–3 players)</h3>
+          <button id="createRoomBtn" class="btn">Create a room</button>
+          <div class="row">
+            <input id="joinCodeInput" type="text" placeholder="Room code (6 letters)" maxlength="6">
+            <button id="joinRoomBtn" class="btn secondary">Join room</button>
+          </div>
+          <p id="friendsMsg" class="muted"></p>
+        </div>
+        <div class="card" id="roomView" style="display:none">
+          <h3 id="roomCodeLabel"></h3>
+          <button id="leaveRoomBtn" class="linkbtn">Leave room</button>
+          <div id="memberList"></div>
+          <p id="petTalk" class="bubble"></p>
+          <h3>Chat with friends</h3>
+          <div id="chatBox" class="chatbox"></div>
+          <div class="row">
+            <input id="chatInput" type="text" placeholder="Say something nice..." maxlength="300">
+            <button id="chatSend" class="btn">Send</button>
+          </div>
+          <h3>🏁 Pet race</h3>
+          <button id="raceStartBtn" class="btn">Start race!</button>
+          <p id="raceMsg" class="muted"></p>
+          <div id="raceArea"></div>
+        </div>
+      </div>
+      <div class="card" id="raceAreaCard" style="display:none"></div>
+    </section>
+
+    <!-- DIARY -->
+    <section data-section="diary" style="display:none">
+      <div class="card" id="diaryCard"></div>
+      <div class="card">
+        <h3>Recent care actions</h3>
+        <div id="diaryLog"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="tiny muted center">Pocket Pet — original characters, drawn in code. Your pet never dies; a sad pet always recovers with care.</footer>
+</div>
+</body>
+</html>
