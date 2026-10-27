@@ -5,7 +5,7 @@ body {
   background: linear-gradient(180deg, #ffe3a3 0%, #ffc9a3 45%, #ffb3c6 75%, #a9d8ff 100%);
   background-attachment: fixed; color: #3a2a22; min-height: 100vh;
 }
-.app { max-width: 520px; margin: 0 auto; padding: 12px 12px 40px; }
+.app { max-width: 520px; margin: 0 auto; padding: 12px 12px 96px; }
 .topbar { display: flex; justify-content: space-between; align-items: center; }
 .logo { font-size: 22px; font-weight: 800; }
 .topstats { display: flex; gap: 8px; }
@@ -51,6 +51,43 @@ input[type="text"], input[type="email"], input[type="password"] {
   background: rgba(255,255,255,.7); cursor: pointer;
 }
 .tab.active { background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+/* Bottom navigation: fixed bar, big tappable buttons, no scrolling pages. */
+.bottomnav {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 520px; margin: 0; padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
+  background: #fff; border-radius: 18px 18px 0 0; box-shadow: 0 -3px 14px rgba(0,0,0,.18); z-index: 50;
+}
+.bottomnav .tab {
+  background: transparent; border-radius: 12px; font-size: 20px; padding: 6px 2px; margin: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 1px; box-shadow: none;
+}
+.bottomnav .tab span { font-size: 11px; font-weight: 700; }
+.bottomnav .tab.active { background: #fff3dd; box-shadow: inset 0 0 0 2px #ffd94d; }
+/* Compact pages: each page fits one phone screen where possible. */
+.card { padding: 14px; }
+.actions { gap: 8px; }
+.actions .btn { padding: 14px 8px; font-size: 15px; }
+/* Pet house scene on the Home page: cozy room, no external images. */
+.room-scene {
+  position: relative; height: 238px; border-radius: 16px; overflow: hidden;
+  background: linear-gradient(180deg, #ffe9c4 0%, #ffe9c4 62%, #e8b07d 62%, #d99a63 100%);
+  border: 2px solid #f3e2c8; margin-bottom: 10px;
+}
+.room-window { position: absolute; left: 10px; top: 8px; font-size: 40px; line-height: 1; }
+.room-sun { position: absolute; left: 34px; top: -2px; font-size: 20px; }
+.room-bed { position: absolute; left: 6px; bottom: 30px; font-size: 46px; line-height: 1; }
+.room-bowl { position: absolute; right: 10px; bottom: 30px; font-size: 40px; line-height: 1; }
+.room-toys { position: absolute; right: 12px; top: 66px; font-size: 34px; line-height: 1; }
+.room-scene .petart {
+  position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+  width: 178px; height: 178px; margin: 0;
+}
+.room-scene .petart.pos-bed { left: 2%; transform: none; }
+.room-scene .petart.pos-bowl { left: auto; right: 2%; transform: none; }
+.room-scene .petart.pos-play { left: 54%; transform: translateX(-50%); }
+.level { font-weight: 800; font-size: 15px; margin: 10px 0 4px; }
+.chipbtn { cursor: pointer; border: 2px solid #eee; background: #fff; }
+.chipbtn.active { background: #ff6b81; color: #fff; border-color: #ff6b81; }
 .quest, .adopt, .shop-item { display: flex; align-items: center; gap: 8px; padding: 9px 0; border-bottom: 1px solid #f3ece4; flex-wrap: wrap; }
 .quest span:first-child, .adopt span:first-child, .shop-item b { flex: 1; }
 .price { font-weight: 800; color: #b7791f; }

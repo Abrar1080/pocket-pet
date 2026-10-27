@@ -54,18 +54,16 @@
 
   <!-- ============ MAIN ============ -->
   <main id="mainView" style="display:none">
-    <nav class="tabs">
-      <button data-tab="home" class="tab active">🏠 Home</button>
-      <button data-tab="shop" class="tab">🛍 Shop</button>
-      <button data-tab="play" class="tab">🎮 Play</button>
-      <button data-tab="friends" class="tab">👯 Friends</button>
-      <button data-tab="diary" class="tab">📖 Diary</button>
-    </nav>
-
-    <!-- HOME -->
+    <!-- HOME: pet + house scene + status (one screen, no scroll) -->
     <section data-section="home">
       <div class="card petcard">
-        <div id="petArt" class="petart"></div>
+        <div class="room-scene">
+          <div class="room-window">🪟<span class="room-sun">☀️</span></div>
+          <div class="room-bed">🛏️</div>
+          <div class="room-bowl">🥣</div>
+          <div class="room-toys">🧸🎾</div>
+          <div id="petArt" class="petart"></div>
+        </div>
         <h2 id="petNameLabel">Milo</h2>
         <p id="petSpeciesLabel" class="muted"></p>
         <div id="speechBubble" class="bubble">Hello!</div>
@@ -75,9 +73,15 @@
           <div class="stat"><span>Energy <b id="valEnergy">0</b></span><div class="bar"><div id="statEnergy" class="fill energy"></div></div></div>
           <div class="stat"><span>Health <b id="valHealth">0</b></span><div class="bar"><div id="statHealth" class="fill health"></div></div></div>
         </div>
+        <p id="levelLabel" class="level"></p>
+        <button id="dailyBonusBtn" class="btn big">🎁 Daily bonus</button>
+        <p id="dailyBonusMsg" class="muted"></p>
         <p class="tiny muted">Stats drift down slowly over time, but your pet never dies — the lowest any stat goes is a sad, recoverable mood.</p>
       </div>
+    </section>
 
+    <!-- CARE: actions + quests + tricks (one screen, no scroll) -->
+    <section data-section="care" style="display:none">
       <div class="card">
         <h3>Care for your pet (your real day)</h3>
         <div class="actions">
@@ -87,6 +91,9 @@
           <button class="btn action" data-action="play">🎾 Play</button>
           <button class="btn action" data-action="sleep">😴 Sleep</button>
           <button class="btn action" data-action="cuddle">🤗 Cuddle</button>
+          <button class="btn action" data-action="brush">🪥 Brush fur</button>
+          <button class="btn action" data-action="dance">💃 Dance</button>
+          <button class="btn action" data-action="sing">🎤 Sing</button>
         </div>
         <p class="tiny muted">Care actions earn up to 30 coins per day. Stages: egg (0 XP) → baby (20) → teen (100) → adult (250).</p>
       </div>
@@ -97,9 +104,9 @@
       </div>
 
       <div class="card">
-        <h3>Your pets</h3>
-        <div id="adoptList"></div>
-        <p class="tiny muted">Start with a cat. Adopt a dog, fox, dragon, or parrot with coins — each pet keeps its own progress.</p>
+        <h3>🎩 Pet tricks</h3>
+        <p class="muted">Train a trick with coins, then perform it any time for happiness.</p>
+        <div id="trickList"></div>
       </div>
     </section>
 
@@ -107,7 +114,13 @@
     <section data-section="shop" style="display:none">
       <div class="card">
         <h3>Shop</h3>
+        <div id="shopCats" class="row"></div>
         <div id="shopList"></div>
+      </div>
+      <div class="card">
+        <h3>Your pets</h3>
+        <div id="adoptList"></div>
+        <p class="tiny muted">Start with a cat. Adopt a dog, fox, dragon, or parrot with coins — each pet keeps its own progress.</p>
       </div>
       <div class="card">
         <h3>Your backpack</h3>
@@ -145,6 +158,14 @@
         <div id="memBoard" class="mem-board"></div>
         <button id="memStart" class="btn">Start memory game</button>
         <p id="memMsg" class="muted"></p>
+      </div>
+      <div class="card">
+        <h3>🐟 Catch the fish!</h3>
+        <p class="muted">Tap the fish as many times as you can in 20 seconds.</p>
+        <div class="row"><span id="fishScore">Score: 0</span><span id="fishTime">Time: 20s</span></div>
+        <div id="fishArea" class="fetch-area"></div>
+        <button id="fishStart" class="btn">Start fishing</button>
+        <p id="fishMsg" class="muted"></p>
         <p class="tiny muted">Games pay up to 100 coins per day and 10 plays per day, so nobody can grind unlimited coins.</p>
       </div>
     </section>
@@ -193,6 +214,10 @@
 
     <!-- DIARY -->
     <section data-section="diary" style="display:none">
+      <div class="card">
+        <h3>🏆 Achievements</h3>
+        <div id="achList"></div>
+      </div>
       <div class="card" id="diaryCard"></div>
       <div class="card">
         <h3>Recent care actions</h3>
@@ -200,6 +225,16 @@
       </div>
     </section>
   </main>
+
+  <!-- Bottom navigation: pages, never scrolling lists -->
+  <nav class="tabs bottomnav" id="bottomNav" style="display:none">
+    <button data-tab="home" class="tab active">🏠<span>Home</span></button>
+    <button data-tab="care" class="tab">💧<span>Care</span></button>
+    <button data-tab="shop" class="tab">🛍<span>Shop</span></button>
+    <button data-tab="play" class="tab">🎮<span>Games</span></button>
+    <button data-tab="friends" class="tab">👯<span>Friends</span></button>
+    <button data-tab="diary" class="tab">📖<span>Diary</span></button>
+  </nav>
 
   <footer class="tiny muted center">Pocket Pet — original characters, drawn in code. Your pet never dies; a sad pet always recovers with care.</footer>
 </div>

@@ -32,11 +32,12 @@ window.PPDB = (function () {
         games_played_date: null, games_played_today: 0 },
       pet: { species: "cat", name: "Milo", stage: "egg", xp: 0, sporty: 0, cozy: 0,
         hunger: 80, happiness: 80, energy: 80, health: 90, outfit: "none",
-        unlocked: ["cat"], last_tick: Date.now() },
+        tricks: [], unlocked: ["cat"], last_tick: Date.now() },
       inventory: [],
       furniture: [],
       logs: [],
-      claims: {}
+      claims: {},
+      achClaims: {}
     };
   }
 
@@ -74,6 +75,7 @@ window.PPDB = (function () {
     var allPetsRes = await client.from("pets").select("species").eq("owner_id", user.id);
     var logRes = await client.from("care_logs").select("*").eq("owner_id", user.id).order("created_at", { ascending: false }).limit(200);
     var claimRes = await client.from("quest_claims").select("*").eq("owner_id", user.id).order("claim_date", { ascending: false }).limit(30);
+    var achRes = await client.from("achievement_claims").select("*").eq("owner_id", user.id);
     var invList = [];
     (invRes.data || []).forEach(function (r) {
       var qty = r.qty || 1;
@@ -85,7 +87,8 @@ window.PPDB = (function () {
       ownedSpecies: (allPetsRes.data || []).map(function (r) { return r.species; }),
       furniture: invList.filter(function (id) { return id.indexOf("furn_") === 0; }),
       logs: (logRes.data || []).map(function (r) { return { action: r.action, at: new Date(r.created_at).getTime() }; }),
-      claims: (claimRes.data || []).reduce(function (acc, r) { acc[r.claim_date + ":" + r.quest_key] = true; return acc; }, {})
+      claims: (claimRes.data || []).reduce(function (acc, r) { acc[r.claim_date + ":" + r.quest_key] = true; return acc; }, {}),
+      achClaims: (achRes.data || []).reduce(function (acc, r) { acc[r.ach_key] = true; return acc; }, {})
     };
   }
 
@@ -101,7 +104,8 @@ window.PPDB = (function () {
   async function onlineSavePet(p) {
     await client.from("pets").update({
       species: p.species, name: p.name, stage: p.stage, xp: p.xp, sporty: p.sporty, cozy: p.cozy,
-      hunger: p.hunger, happiness: p.happiness, energy: p.energy, health: p.health, outfit: p.outfit
+      hunger: p.hunger, happiness: p.happiness, energy: p.energy, health: p.health, outfit: p.outfit,
+      tricks: p.tricks || []
     }).eq("id", p.id);
   }
 
@@ -168,6 +172,10 @@ window.PPDB = (function () {
     async claimQuest(userId, questKey, dateStr) {
       if (mode !== "online") return;
       await client.from("quest_claims").insert({ owner_id: userId, quest_key: questKey, claim_date: dateStr });
+    },
+    async claimAchievement(userId, achKey) {
+      if (mode !== "online") return;
+      await client.from("achievement_claims").insert({ owner_id: userId, ach_key: achKey });
     },
     async switchPet(userId, petRowId) {
       if (mode !== "online") return;

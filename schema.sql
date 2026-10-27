@@ -4,7 +4,12 @@
 --
 -- Tables used by the app (db.js):
 --   profiles, pets, inventory, care_logs, quest_claims,
---   rooms, room_members, messages, races
+--   rooms, room_members, messages, races, achievement_claims
+--
+-- v2 ADDITIVE CHANGES (features update, Oct 2026): the block at the
+-- bottom only ADDS a tricks column on pets and a new
+-- achievement_claims table. Nothing is renamed or dropped. If you
+-- already ran v1, just run the v2 block — it is safe to re-run.
 --
 -- SECURITY: Row Level Security is ON for every table. The policies below
 -- let a logged-in player read/write only their own rows, and let any
@@ -174,6 +179,23 @@ create policy "room messages" on public.messages
 drop policy if exists "room races" on public.races;
 create policy "room races" on public.races
   for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+
+-- ---------- v2 ADDITIVE CHANGES (safe to re-run) ----------
+-- Tricks learned per pet (stored as a JSON array of trick keys).
+alter table public.pets add column if not exists tricks jsonb not null default '[]'::jsonb;
+
+-- Achievement claims (one row per player per achievement).
+create table if not exists public.achievement_claims (
+  id uuid primary key default gen_random_uuid(),
+  owner_id uuid not null references public.profiles (id) on delete cascade,
+  ach_key text not null,
+  claimed_at timestamptz not null default now(),
+  unique (owner_id, ach_key)
+);
+alter table public.achievement_claims enable row level security;
+drop policy if exists "own achievement claims" on public.achievement_claims;
+create policy "own achievement claims" on public.achievement_claims
+  for all using (auth.uid() = owner_id) with check (auth.uid() = owner_id);
 
 -- ---------- OPTIONAL hardening (production, real money) ----------
 -- Move coin grants server-side so a modified client cannot mint coins:

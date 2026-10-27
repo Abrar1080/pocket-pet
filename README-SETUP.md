@@ -117,3 +117,15 @@ the email link, then log in.
 - `db.js` — local/online data layer (localStorage vs Supabase Auth + tables + Realtime)
 - `app.js` — game logic: care, quests, shop, games, diary, rooms, chat, races
 - `schema.sql` — Supabase Postgres schema + RLS + Realtime
+
+---
+
+## v2 update — pages, house scene, more features (Oct 2026)
+
+**Pages (bottom navigation, no scrolling):** Home (pet in its house + stats + level + daily bonus), Care (9 care actions + 5 daily quests + tricks), Shop (category filters + adopt pets + backpack + room), Games (fetch, memory, catch-the-fish), Friends (rooms, chat, races), Diary (achievements + week card + recent actions).
+
+**House scene (Home page):** the pet lives in a cozy room (window, bed, food bowl, toys). It stands on its bed when sleepy, in the play corner after playing/walking, and by the food bowl after eating/drinking.
+
+**New features:** pet levels (1 level per 50 XP, progress shown on Home), daily bonus (+25 coins, once a day), 4 trainable tricks (sit, wave, jump, roll over), 6 achievements with coin rewards, 3 new care actions (brush, dance, sing), 2 new quests (brush, play games), 7 new shop items, shop category filters.
+
+**If you already ran the v1 schema:** just run the v2 block at the bottom of schema.sql in the Supabase SQL editor. It only ADDS a `tricks` column on pets and a new `achievement_claims` table — nothing is renamed or dropped, and it is safe to re-run.
